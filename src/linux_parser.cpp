@@ -72,13 +72,8 @@ vector<int> LinuxParser::Pids() {
   if (directory == nullptr) return pids;
   struct dirent* file;
   while ((file = readdir(directory)) != nullptr) {
-    if (file->d_type == DT_DIR) {
-      string filename(file->d_name);
-      if (std::all_of(filename.begin(), filename.end(), isdigit)) {
-        int pid = stoi(filename);
-        pids.push_back(pid);
-      }
-    }
+    const int pid = ParseDirectoryPid(file->d_name);
+    if (pid >= 0) pids.push_back(pid);
   }
   closedir(directory);
   std::sort(pids.begin(), pids.end());
@@ -454,4 +449,14 @@ float LinuxParser::ComputeProcessorUtilization(
   }
   return static_cast<float>(static_cast<long double>(busy_delta) /
                             static_cast<long double>(total_delta));
+}
+
+int LinuxParser::ParseDirectoryPid(const string& directory_name) {
+  if (directory_name.empty()) return -1;
+  int pid = 0;
+  const char* begin = directory_name.data();
+  const char* end = begin + directory_name.size();
+  const auto parsed = std::from_chars(begin, end, pid);
+  if (parsed.ec != std::errc{} || parsed.ptr != end || pid < 0) return -1;
+  return pid;
 }

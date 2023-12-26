@@ -303,3 +303,12 @@ target_compile_features(ram_integration_test PRIVATE cxx_std_17)
 target_compile_options(ram_integration_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME ram_integration_test COMMAND ram_integration_test)
 
+add_executable(parse_directory_pid_test
+  parse_directory_pid_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_directory_pid_test PRIVATE ../include)
+target_compile_features(parse_directory_pid_test PRIVATE cxx_std_17)
+target_compile_options(parse_directory_pid_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_directory_pid_test COMMAND parse_directory_pid_test)
+
