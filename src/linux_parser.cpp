@@ -302,12 +302,9 @@ int LinuxParser::ParsePid(const string& stat_line) {
   if (pos == string::npos || pos == 0) return -1;
   string pid_str = stat_line.substr(0, pos);
   while (!pid_str.empty() && std::isspace(pid_str.back())) pid_str.pop_back();
-  if (pid_str.empty()) return -1;
-  try {
-    return std::stoi(pid_str);
-  } catch (const std::exception&) {
-    return -1;
-  }
+  const auto first = pid_str.find_first_not_of(" \t");
+  if (first == string::npos) return -1;
+  return ParseDirectoryPid(pid_str.substr(first));
 }
 
 string LinuxParser::ParseRamMb(const string& ram_kb) {

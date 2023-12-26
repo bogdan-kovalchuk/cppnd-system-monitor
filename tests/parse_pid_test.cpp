@@ -31,6 +31,11 @@ int main() {
   assert(ParsePid("abc (proc) S") == -1);
   std::printf("ParsePid whitespace and non-numeric handling passed\n");
 
+  assert(ParsePid("42junk (proc) S") == -1);
+  assert(ParsePid("12 34 (proc) S") == -1);
+  assert(ParsePid("2147483648 (proc) S") == -1);
+  std::printf("ParsePid rejects partial and overflowing numeric fields\n");
+
   std::printf("All ParsePid tests passed.\n");
   return 0;
 }
