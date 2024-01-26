@@ -26,6 +26,9 @@ int main() {
   assert(ParseStatField("1234 (a(b)c) S 1", 2) == "a(b)c");
   assert(ParseStatField("1234 (proc) S", 3) == "S");
   assert(ParseStatField("1234 (proc)", 3).empty());
+  assert(ParseStatField("1234 (proc)S 1", 3).empty());
+  assert(ParseStatField("1234 (proc)\tS 1", 3) == "S");
+  std::printf("ParseStatField validates separator after command name\n");
   std::printf("ParseStatField edge cases passed\n");
 
   assert(ParseStatusValue("", "Name").empty());

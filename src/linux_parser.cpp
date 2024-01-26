@@ -221,8 +221,11 @@ string LinuxParser::ParseStatField(const string& stat_line, int field_index) {
     return stat_line.substr(open + 1, close - open - 1);
   }
   auto close = stat_line.rfind(')');
-  if (close == string::npos || close + 2 >= stat_line.size()) return "";
-  string tail = stat_line.substr(close + 2);
+  if (close == string::npos || close + 1 >= stat_line.size() ||
+      !std::isspace(static_cast<unsigned char>(stat_line[close + 1]))) {
+    return "";
+  }
+  string tail = stat_line.substr(close + 1);
   std::istringstream iss(tail);
   string token;
   int current = 3;
