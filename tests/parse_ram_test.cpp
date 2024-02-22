@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <limits>
 #include <string>
 
 int main() {
@@ -32,6 +33,12 @@ int main() {
   assert(ParseRamMb("16384000") == "16000");
   assert(ParseRamMb("1048576") == "1024");
   std::printf("ParseRamMb realistic process sizes passed\n");
+
+  const long largest_kb = std::numeric_limits<long>::max();
+  const long expected_mb = largest_kb / 1024 +
+      (largest_kb % 1024 >= 512 ? 1 : 0);
+  assert(ParseRamMb(std::to_string(largest_kb)) == std::to_string(expected_mb));
+  std::printf("ParseRamMb rounds the largest long without overflow\n");
 
   std::printf("All ParseRamMb tests passed.\n");
   return 0;
