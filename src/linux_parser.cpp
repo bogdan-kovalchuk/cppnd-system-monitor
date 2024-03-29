@@ -355,11 +355,30 @@ float LinuxParser::ParseMemoryUtilization(const string& meminfo_content) {
   std::uint64_t available_memory = 0;
   if (!ParseUnsignedStrict(ParseMeminfoValue(meminfo_content, "MemTotal"),
                            total_memory) ||
-      !ParseUnsignedStrict(ParseMeminfoValue(meminfo_content, "MemAvailable"),
-                           available_memory) ||
-      total_memory == 0 || available_memory > total_memory) {
+      total_memory == 0) {
     return 0.0f;
   }
+
+  const string reported_available =
+      ParseMeminfoValue(meminfo_content, "MemAvailable");
+  if (!reported_available.empty()) {
+    if (!ParseUnsignedStrict(reported_available, available_memory)) return 0.0f;
+  } else {
+    if (!ParseUnsignedStrict(ParseMeminfoValue(meminfo_content, "MemFree"),
+                             available_memory)) {
+      return 0.0f;
+    }
+    for (const char* key : {"Buffers", "Cached"}) {
+      const string value = ParseMeminfoValue(meminfo_content, key);
+      if (value.empty()) continue;
+      std::uint64_t parsed = 0;
+      if (!ParseUnsignedStrict(value, parsed) ||
+          !AddWithoutOverflow(parsed, available_memory)) {
+        return 0.0f;
+      }
+    }
+  }
+  if (available_memory > total_memory) return 0.0f;
   return static_cast<float>(
       static_cast<long double>(total_memory - available_memory) /
       static_cast<long double>(total_memory));

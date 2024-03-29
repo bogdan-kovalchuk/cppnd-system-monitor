@@ -46,8 +46,11 @@ int main() {
 
   const std::string no_available =
       "MemTotal: 16384000 kB\n"
-      "MemFree: 8192000 kB\n";
-  assert(ParseMemoryUtilization(no_available) == 0.0f);
+      "MemFree: 4096000 kB\n"
+      "Buffers: 1024000 kB\n"
+      "Cached: 3072000 kB\n";
+  assert(std::fabs(ParseMemoryUtilization(no_available) - 0.5f) < 0.001f);
+  std::printf("ParseMemoryUtilization estimates availability without MemAvailable\n");
 
   const std::string malformed =
       "MemTotal: unknown kB\n"
