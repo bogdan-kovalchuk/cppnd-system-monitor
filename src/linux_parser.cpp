@@ -433,11 +433,23 @@ float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {
   long cutime = ParseLong(data[3], 0);
   long cstime = ParseLong(data[4], 0);
   long starttime = ParseLong(data[5], 0);
-  long total_time = utime + stime + cutime + cstime;
+  if (uptime < 0 || utime < 0 || stime < 0 || cutime < 0 || cstime < 0 ||
+      starttime < 0) {
+    return 0.0f;
+  }
+  std::uint64_t total_time = 0;
+  for (long value : {utime, stime, cutime, cstime}) {
+    if (!AddWithoutOverflow(static_cast<std::uint64_t>(value), total_time)) {
+      return 0.0f;
+    }
+  }
   long clk_tck = sysconf(_SC_CLK_TCK);
+  if (clk_tck <= 0) return 0.0f;
   long seconds = uptime - (starttime / clk_tck);
   if (seconds <= 0) return 0.0f;
-  return (float)(total_time / clk_tck) / (float)seconds;
+  return static_cast<float>(static_cast<long double>(total_time) /
+                            static_cast<long double>(clk_tck) /
+                            static_cast<long double>(seconds));
 }
 
 float LinuxParser::ComputeProcessorUtilization(

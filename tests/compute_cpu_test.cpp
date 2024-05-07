@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdio>
+#include <limits>
 #include <string>
 #include <vector>
 #include <unistd.h>
@@ -65,6 +66,20 @@ int main() {
     float result = ComputeCpuUtilization(data);
     assert(result == expected);
     std::printf("ComputeCpuUtilization zero total-time passed (%.6f)\n", result);
+  }
+
+  {
+    const std::vector<std::string> data = {"1000", "-1", "10", "0", "0", "0"};
+    assert(ComputeCpuUtilization(data) == 0.0f);
+    std::printf("ComputeCpuUtilization rejects negative tick counts\n");
+  }
+
+  {
+    const auto largest = std::to_string(std::numeric_limits<long>::max());
+    const std::vector<std::string> data =
+        {"1000", largest, largest, largest, largest, "0"};
+    assert(ComputeCpuUtilization(data) == 0.0f);
+    std::printf("ComputeCpuUtilization rejects overflowing accumulated ticks\n");
   }
 
   std::printf("All ComputeCpuUtilization tests passed.\n");
