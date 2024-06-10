@@ -335,18 +335,22 @@ string LinuxParser::ParseOperatingSystem(const string& os_release_content) {
   std::istringstream stream(os_release_content);
   string line;
   while (std::getline(stream, line)) {
-    std::string replaced = line;
-    std::replace(replaced.begin(), replaced.end(), ' ', '_');
-    std::replace(replaced.begin(), replaced.end(), '=', ' ');
-    std::replace(replaced.begin(), replaced.end(), '"', ' ');
-    std::istringstream linestream(replaced);
-    string key, value;
-    while (linestream >> key >> value) {
-      if (key == "PRETTY_NAME") {
-        std::replace(value.begin(), value.end(), '_', ' ');
-        return value;
-      }
+    const auto separator = line.find('=');
+    if (separator == string::npos) continue;
+    const auto key_begin = line.find_first_not_of(" \t");
+    const auto key_end = line.find_last_not_of(" \t", separator - 1);
+    if (key_begin == string::npos || key_end == string::npos ||
+        line.substr(key_begin, key_end - key_begin + 1) != "PRETTY_NAME") {
+      continue;
     }
+    const auto value_begin = line.find_first_not_of(" \t", separator + 1);
+    if (value_begin == string::npos) return "";
+    const auto value_end = line.find_last_not_of(" \t");
+    string value = line.substr(value_begin, value_end - value_begin + 1);
+    if (value.size() >= 2 && value.front() == '"' && value.back() == '"') {
+      value = value.substr(1, value.size() - 2);
+    }
+    return value;
   }
   return "";
 }

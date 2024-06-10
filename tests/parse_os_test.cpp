@@ -42,6 +42,13 @@ int main() {
   assert(ParseOperatingSystem(unquoted) == "Debian GNU/Linux 12 (bookworm)");
   std::printf("ParseOperatingSystem multi-word with special chars passed\n");
 
+  const std::string padded =
+      "NAME=Example\n"
+      "  PRETTY_NAME \t=\t \"Example OS Server\"   \n";
+  assert(ParseOperatingSystem(padded) == "Example OS Server");
+  assert(ParseOperatingSystem("PRETTY_NAME=\n").empty());
+  std::printf("ParseOperatingSystem accepts spaced assignments\n");
+
   std::printf("All ParseOperatingSystem tests passed.\n");
   return 0;
 }
