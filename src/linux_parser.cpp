@@ -410,6 +410,14 @@ long LinuxParser::ParseSystemUpTime(const string& uptime_content) {
   return static_cast<long>(uptime);
 }
 
+long LinuxParser::ComputeProcessUpTime(long system_uptime, long start_ticks,
+                                       long clock_ticks) {
+  if (system_uptime < 0 || start_ticks < 0 || clock_ticks <= 0) return 0;
+  const long start_seconds = start_ticks / clock_ticks;
+  if (start_seconds > system_uptime) return 0;
+  return system_uptime - start_seconds;
+}
+
 int LinuxParser::ParseStatProcesses(const string& stat_content, const string& key) {
   std::istringstream stream(stat_content);
   string line;

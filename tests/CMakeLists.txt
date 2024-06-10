@@ -312,3 +312,12 @@ target_compile_features(parse_directory_pid_test PRIVATE cxx_std_17)
 target_compile_options(parse_directory_pid_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_directory_pid_test COMMAND parse_directory_pid_test)
 
+add_executable(process_uptime_test
+  process_uptime_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(process_uptime_test PRIVATE ../include)
+target_compile_features(process_uptime_test PRIVATE cxx_std_17)
+target_compile_options(process_uptime_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME process_uptime_test COMMAND process_uptime_test)
+
