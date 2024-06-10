@@ -7,6 +7,7 @@
 #include <array>
 #include <cctype>
 #include <charconv>
+#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <string>
@@ -400,9 +401,12 @@ string LinuxParser::ParseUser(const string& passwd_content, const string& uid) {
 
 long LinuxParser::ParseSystemUpTime(const string& uptime_content) {
   std::istringstream iss(uptime_content);
-  double uptime = 0.0;
+  long double uptime = 0.0;
   iss >> uptime;
-  if (iss.fail()) return 0;
+  if (iss.fail() || !std::isfinite(uptime) || uptime < 0.0 ||
+      uptime > static_cast<long double>(std::numeric_limits<long>::max())) {
+    return 0;
+  }
   return static_cast<long>(uptime);
 }
 

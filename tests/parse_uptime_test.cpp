@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <limits>
 #include <string>
 
 int main() {
@@ -27,6 +28,13 @@ int main() {
 
   assert(ParseSystemUpTime("999999.99 0.00") == 999999);
   std::printf("ParseSystemUpTime large value passed\n");
+
+  assert(ParseSystemUpTime("-1.0 0.0") == 0);
+  assert(ParseSystemUpTime("nan 0.0") == 0);
+  assert(ParseSystemUpTime("inf 0.0") == 0);
+  assert(ParseSystemUpTime(std::to_string(std::numeric_limits<long>::max()) +
+                           "000 0.0") == 0);
+  std::printf("ParseSystemUpTime rejects invalid and overflowing values\n");
 
   std::printf("All ParseSystemUpTime tests passed.\n");
   return 0;
