@@ -2,7 +2,9 @@
 
 #include <curses.h>
 
+#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <string>
 #include <thread>
 #include <vector>
@@ -18,16 +20,15 @@ using std::to_string;
 std::string NCursesDisplay::ProgressBar(float percent) {
   std::string result{"0%"};
   int size{50};
-  float bars{percent * size};
+  const float bounded_percent =
+      std::isfinite(percent) ? std::clamp(percent, 0.0f, 1.0f) : 0.0f;
+  float bars{bounded_percent * size};
 
   for (int i{0}; i < size; ++i) {
-    result += i <= bars ? '|' : ' ';
+    result += i < bars ? '|' : ' ';
   }
 
-  string display{to_string(percent * 100).substr(0, 4)};
-  if (percent < 0.1 || percent == 1.0)
-    display = " " + to_string(percent * 100).substr(0, 3);
-  return result + " " + display + "/100%";
+  return result + " " + Format::Percent(bounded_percent) + "/100%";
 }
 
 void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
@@ -75,8 +76,8 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   for (int i = 0; i < num_processes; ++i) {
     mvwprintw(window, ++row, pid_column, to_string(processes[i].Pid()).c_str());
     mvwprintw(window, row, user_column, processes[i].User().c_str());
-    float cpu = processes[i].CpuUtilization() * 100;
-    mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
+    mvwprintw(window, row, cpu_column,
+              Format::Percent(processes[i].CpuUtilization()).c_str());
     mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
     mvwprintw(window, row, time_column,
               Format::ElapsedTime(processes[i].UpTime()).c_str());

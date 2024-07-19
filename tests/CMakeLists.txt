@@ -321,3 +321,12 @@ target_compile_features(process_uptime_test PRIVATE cxx_std_17)
 target_compile_options(process_uptime_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME process_uptime_test COMMAND process_uptime_test)
 
+add_executable(format_percent_test
+  format_percent_test.cpp
+  ../src/format.cpp
+)
+target_include_directories(format_percent_test PRIVATE ../include)
+target_compile_features(format_percent_test PRIVATE cxx_std_17)
+target_compile_options(format_percent_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME format_percent_test COMMAND format_percent_test)
+

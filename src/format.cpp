@@ -2,6 +2,9 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 using std::string;
@@ -35,4 +38,12 @@ string Format::ElapsedTimeDiv(long seconds) {
   ldiv_t rm = ldiv(seconds % 3600, 60);
   std::snprintf(buf, sizeof(buf), "%02ld:%02ld:%02ld", h, rm.quot, rm.rem);
   return buf;
+}
+
+string Format::Percent(float ratio) {
+  if (!std::isfinite(ratio) || ratio < 0.0f) ratio = 0.0f;
+  if (ratio > 1.0f) ratio = 1.0f;
+  std::ostringstream stream;
+  stream << std::fixed << std::setprecision(1) << ratio * 100.0f;
+  return stream.str();
 }
