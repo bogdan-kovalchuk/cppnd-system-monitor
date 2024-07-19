@@ -390,15 +390,20 @@ float LinuxParser::ParseMemoryUtilization(const string& meminfo_content) {
 }
 
 string LinuxParser::ParseUser(const string& passwd_content, const string& uid) {
+  if (uid.empty()) return "";
   std::istringstream stream(passwd_content);
   string line;
   while (std::getline(stream, line)) {
-    std::string replaced = line;
-    std::replace(replaced.begin(), replaced.end(), ':', ' ');
-    std::istringstream linestream(replaced);
-    string user, placeholder;
-    linestream >> user >> placeholder >> placeholder;
-    if (placeholder == uid) return user;
+    const auto password_separator = line.find(':');
+    if (password_separator == string::npos || password_separator == 0) continue;
+    const auto uid_separator = line.find(':', password_separator + 1);
+    if (uid_separator == string::npos) continue;
+    const auto group_separator = line.find(':', uid_separator + 1);
+    if (group_separator == string::npos) continue;
+    if (line.substr(password_separator + 1,
+                    uid_separator - password_separator - 1) == uid) {
+      return line.substr(0, password_separator);
+    }
   }
   return "";
 }

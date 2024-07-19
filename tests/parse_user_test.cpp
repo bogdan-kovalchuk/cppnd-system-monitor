@@ -38,6 +38,15 @@ int main() {
   assert(ParseUser(with_colons, "200") == "user2");
   std::printf("ParseUser with GECOS fields passed\n");
 
+  const std::string malformed =
+      "truncated:x:300\n"
+      ":x:400:400:Missing name:/home/missing:/bin/sh\n"
+      "valid:x:500:500:Valid:/home/valid:/bin/sh\n";
+  assert(ParseUser(malformed, "300").empty());
+  assert(ParseUser(malformed, "400").empty());
+  assert(ParseUser(malformed, "500") == "valid");
+  std::printf("ParseUser ignores incomplete passwd entries\n");
+
   std::printf("All ParseUser tests passed.\n");
   return 0;
 }
