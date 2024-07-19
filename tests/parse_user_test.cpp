@@ -19,6 +19,11 @@ int main() {
   assert(ParseUser(passwd, "65534") == "nobody");
   std::printf("ParseUser standard passwd entries passed\n");
 
+  assert(ParseUser("exact:x:42:43:Exact:/home/exact:/bin/sh\n", "42") ==
+         "exact");
+  assert(ParseUser("exact:x:42:43:Exact:/home/exact:/bin/sh\n", "43").empty());
+  std::printf("ParseUser matches the UID field rather than the group field\n");
+
   assert(ParseUser(passwd, "9999").empty());
   assert(ParseUser(passwd, "").empty());
   std::printf("ParseUser unknown uid returns empty\n");

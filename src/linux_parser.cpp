@@ -400,8 +400,8 @@ string LinuxParser::ParseUser(const string& passwd_content, const string& uid) {
     if (uid_separator == string::npos) continue;
     const auto group_separator = line.find(':', uid_separator + 1);
     if (group_separator == string::npos) continue;
-    if (line.substr(password_separator + 1,
-                    uid_separator - password_separator - 1) == uid) {
+    if (line.substr(uid_separator + 1,
+                    group_separator - uid_separator - 1) == uid) {
       return line.substr(0, password_separator);
     }
   }
