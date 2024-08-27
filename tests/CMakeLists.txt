@@ -3,6 +3,12 @@ project(system_monitor_focused_tests LANGUAGES CXX)
 
 enable_testing()
 
+if(MSVC)
+  add_compile_options(/UNDEBUG)
+else()
+  add_compile_options(-UNDEBUG)
+endif()
+
 add_executable(linux_parser_test
   linux_parser_test.cpp
   ../src/linux_parser.cpp
