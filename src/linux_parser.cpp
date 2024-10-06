@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <sstream>
 #include <string>
 #include <system_error>
 #include <vector>
@@ -262,7 +263,7 @@ long LinuxParser::ParseLong(const string& s, long fallback) {
   try {
     size_t pos = 0;
     long val = std::stol(s, &pos);
-    if (pos == 0) return fallback;
+    if (pos != s.size()) return fallback;
     return val;
   } catch (const std::exception&) {
     return fallback;

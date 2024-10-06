@@ -17,7 +17,7 @@ int main() {
 
   assert(ParseLong("") == 0);
   assert(ParseLong("abc") == 0);
-  assert(ParseLong("12abc") == 12);
+  assert(ParseLong("12abc") == 0);
   assert(ParseLong("  42") == 0);
   std::printf("ParseLong invalid inputs return fallback\n");
 
@@ -27,7 +27,7 @@ int main() {
   std::printf("ParseLong custom fallback passed\n");
 
   assert(ParseLong("  42", 0) == 0);
-  assert(ParseLong("42  ", 0) == 42);
+  assert(ParseLong("42  ", 0) == 0);
   std::printf("ParseLong whitespace handling passed\n");
 
   std::printf("All ParseLong tests passed.\n");

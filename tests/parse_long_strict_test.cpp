@@ -27,9 +27,9 @@ int main() {
   assert(ParseLong("-1") == -1);
   std::printf("ParseLong plain numeric inputs still work\n");
 
-  assert(ParseLong("42abc") == 42);
-  assert(ParseLong("12 34") == 12);
-  std::printf("ParseLong trailing non-digit accepted as partial parse\n");
+  assert(ParseLong("42abc") == 0);
+  assert(ParseLong("12 34", -1) == -1);
+  std::printf("ParseLong rejects trailing non-digit input\n");
 
   std::printf("All ParseLong strict whitespace tests passed.\n");
   return 0;
